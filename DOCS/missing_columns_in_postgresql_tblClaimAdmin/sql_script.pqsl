@@ -1,0 +1,100 @@
+-- Complete script to solve all missing columns for tblClaimAdmin
+-- This script includes all the columns we discovered were missing
+
+-- Create the table if it doesn't exist (with all required columns)
+CREATE TABLE IF NOT EXISTS "tblClaimAdmin" (
+    -- Primary identifiers
+    "ClaimAdminId" SERIAL PRIMARY KEY,
+    "ClaimAdminUUID" UUID,
+    "ClaimAdminCode" VARCHAR(50),
+    "LegacyID" INTEGER,
+
+    -- Personal information (from your original Django model)
+    "LastName" VARCHAR(100),
+    "OtherNames" VARCHAR(100),
+    "DOB" DATE,
+    "EmailId" VARCHAR(200),
+    "Phone" VARCHAR(50),
+
+    -- System/Business fields
+    "HFId" INTEGER,
+    "HasLogin" BOOLEAN,
+    "AuditUserId" INTEGER,
+
+    -- Audit/Validity fields
+    "ValidityFrom" TIMESTAMP,
+    "ValidityTo" TIMESTAMP
+);
+
+-- Add all missing columns to existing table (these will be ignored if columns already exist)
+-- All the columns we discovered were missing through your error messages:
+
+-- Primary identifiers
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "ClaimAdminId" SERIAL;
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "ClaimAdminUUID" UUID;
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "ClaimAdminCode" VARCHAR(50);
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "LegacyID" INTEGER;
+
+-- Personal information (from your Django model fields)
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "LastName" VARCHAR(100);
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "OtherNames" VARCHAR(100);
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "DOB" DATE;
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "EmailId" VARCHAR(200);
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "Phone" VARCHAR(50);
+
+-- System/Business fields
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "HFId" INTEGER;
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "HasLogin" BOOLEAN;
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "AuditUserId" INTEGER;
+
+-- Audit/Validity fields
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "ValidityFrom" TIMESTAMP;
+ALTER TABLE "tblClaimAdmin" ADD COLUMN IF NOT EXISTS "ValidityTo" TIMESTAMP;
+
+-- Create indexes for better performance on all the key columns
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_ClaimAdminId" ON "tblClaimAdmin" ("ClaimAdminId");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_ClaimAdminUUID" ON "tblClaimAdmin" ("ClaimAdminUUID");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_ClaimAdminCode" ON "tblClaimAdmin" ("ClaimAdminCode");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_LegacyID" ON "tblClaimAdmin" ("LegacyID");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_EmailId" ON "tblClaimAdmin" ("EmailId");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_HFId" ON "tblClaimAdmin" ("HFId");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_AuditUserId" ON "tblClaimAdmin" ("AuditUserId");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_ValidityFrom" ON "tblClaimAdmin" ("ValidityFrom");
+CREATE INDEX IF NOT EXISTS "idx_tblClaimAdmin_ValidityTo" ON "tblClaimAdmin" ("ValidityTo");
+
+-- Add foreign key constraint for health facility (uncomment and adjust if needed)
+-- ALTER TABLE "tblClaimAdmin" ADD CONSTRAINT "fk_tblClaimAdmin_HFId"
+--     FOREIGN KEY ("HFId") REFERENCES "location_healthfacility"("id") ON DELETE SET NULL;
+
+-- Add table and column comments for documentation
+COMMENT ON TABLE "tblClaimAdmin" IS 'Claim Administrator table with all required fields';
+COMMENT ON COLUMN "tblClaimAdmin"."ClaimAdminId" IS 'Primary key - unique identifier for claim admin';
+COMMENT ON COLUMN "tblClaimAdmin"."ClaimAdminUUID" IS 'UUID for global unique identification';
+COMMENT ON COLUMN "tblClaimAdmin"."ClaimAdminCode" IS 'Human-readable code for the claim admin';
+COMMENT ON COLUMN "tblClaimAdmin"."LegacyID" IS 'Legacy system ID for data migration purposes';
+COMMENT ON COLUMN "tblClaimAdmin"."LastName" IS 'Last name of the claim administrator';
+COMMENT ON COLUMN "tblClaimAdmin"."OtherNames" IS 'Other names of the claim administrator';
+COMMENT ON COLUMN "tblClaimAdmin"."DOB" IS 'Date of birth';
+COMMENT ON COLUMN "tblClaimAdmin"."EmailId" IS 'Email address';
+COMMENT ON COLUMN "tblClaimAdmin"."Phone" IS 'Phone number';
+COMMENT ON COLUMN "tblClaimAdmin"."HFId" IS 'Health Facility ID (foreign key)';
+COMMENT ON COLUMN "tblClaimAdmin"."HasLogin" IS 'Whether the admin has login access';
+COMMENT ON COLUMN "tblClaimAdmin"."AuditUserId" IS 'ID of the user who last modified this record';
+COMMENT ON COLUMN "tblClaimAdmin"."ValidityFrom" IS 'Start date/time when this record becomes valid';
+COMMENT ON COLUMN "tblClaimAdmin"."ValidityTo" IS 'End date/time when this record becomes invalid';
+
+-- Verify all columns exist and show the complete table structure
+SELECT
+    column_name,
+    data_type,
+    character_maximum_length,
+    is_nullable,
+    column_default
+FROM information_schema.columns
+WHERE table_name = 'tblClaimAdmin'
+ORDER BY ordinal_position;
+
+-- Show table exists
+SELECT schemaname, tablename
+FROM pg_tables
+WHERE tablename = 'tblClaimAdmin';
